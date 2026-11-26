@@ -1,7 +1,13 @@
 import type { Metadata, Viewport } from 'next'
 import '../src/index.css'
 
-export const metadata: Metadata = { title: 'Frosty - what to wear today' }
+export const metadata: Metadata = {
+  title: 'Frosty - what to wear today',
+  description: 'Frosty checks the weather and your own wardrobe and tells you what to wear.',
+  applicationName: 'Frosty',
+  // iOS: "Add to Home Screen" opens Frosty full screen under this name (Android and desktop read app/manifest.ts)
+  appleWebApp: { capable: true, title: 'Frosty', statusBarStyle: 'default' },
+}
 export const viewport: Viewport = { themeColor: '#FBF5EF' }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

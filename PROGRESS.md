@@ -1,5 +1,11 @@
 # PROGRESS
 
+## 2026-11-26 (app icons, branch `app-icons`)
+
+- Favicon (`app/favicon.ico`, 16/32/48), tab icon (`app/icon.png`), iOS home-screen icon (`app/apple-icon.png`), install icons in `public/` and a web app manifest (`app/manifest.ts`), all from the app's own mascot. `app/layout.tsx` metadata sets the app name for iOS.
+- Gotcha: Next.js rejects an `.ico` whose entries are BMP (what ffmpeg writes). The entries must be PNG; the icons were rendered by Chrome at their exact sizes and packed by a small script (scratchpad, not in the repo).
+- IMPORTANT: Gemini's free tier allows 20 requests per day on `gemini-4-hydrogen` and `gemini-3.8-flash`. Testing on 2026-11-26 used both up; the app runs on the two flash-lite fallbacks until the quota resets (about 18 h from 14:50 UTC+1), and falls back to the rules if those run out too.
+
 ## 2026-11-26 (photo wardrobe)
 
 - Merged into `main` (aad56de, fast-forward from branch `photo-wardrobe`) and deployed to https://fits-steel.vercel.app. The 8-step browser run and `check:photo` both passed against the live site.
