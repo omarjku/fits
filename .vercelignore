@@ -1,0 +1,5 @@
+.claude
+.claude-flow
+.swarm
+.env*
+*.log

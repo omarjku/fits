@@ -1,5 +1,11 @@
 # PROGRESS
 
+## 2026-11-26 (deployed)
+
+- Live at https://fits-steel.vercel.app (Vercel project `fits`, team "Omar's projects"). Deployed with `vercel --prod` from the CLI: the GitHub repo is NOT connected to Vercel (connection failed), so pushes do not auto-deploy. Redeploy with `vercel --prod --yes`.
+- `GEMINI_API_KEY` is set on Vercel (production, sensitive). Verified live: page, `/api/weather`, `/api/recommend` (`source: gemini`), `/api/wardrobe/analyze`, place lookup for Wales.
+- Gotcha: the RTK hook rewrites `grep` output, so never pipe `grep` into a command that stores a value. The first key upload was mangled this way; extract values with python instead.
+
 ## 2026-11-26 (afternoon): Zoha's frontend connected
 
 - Zoha pushed a Vite + React app ("Frosty", mock data) to branch `frosty-app`, unrelated history. Merged into `main` and moved into the Next.js app: `app/layout.tsx` + `app/page.tsx` render `src/App.tsx` client-only (it reads localStorage while rendering). Tailwind v4 via `postcss.config.mjs`. Removed `index.html`, `vite.config.ts`, `src/main.tsx`, `src/vite-env.d.ts`. `npm run dev` now starts everything.

@@ -9,3 +9,5 @@ next-env.d.ts
 .claude
 *.log
 dist
+.vercel
+frosty-qr.png
