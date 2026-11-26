@@ -7,7 +7,9 @@
 - Cap of 60 Gemini attempts/min per instance, each model tried counts (endpoints are public, no auth). Also set a quota cap on the key.
 - Free tier: 5 requests/min on gemini-4-hydrogen, limits are per Google project, so teammates on the same project share them.
 
-**Pending**: merge `backend` into `main` with Zoha's frontend, deploy, set `GEMINI_API_KEY` on the host.
+- `backend` fast-forwarded into `main` (5bccecc); main had only the README. Work on `main` from here.
+
+**Pending**: Zoha adds the frontend (`app/page.tsx` etc.) on top of `main`, deploy, set `GEMINI_API_KEY` on the host.
 
 ## 2026-11-26: backend built (hackathon, 3 h total)
 
@@ -26,4 +28,4 @@
 **Pending**
 - Merge with Zoha's frontend, deploy (needed for the QR code), set the key on the host.
 
-**Commands**: `npm run dev`, `npm test`, `npx tsc --noEmit`. Repo: github.com/omarjku/fits, branch `backend`.
+**Commands**: `npm run dev`, `npm test`, `npx tsc --noEmit`. Repo: github.com/omarjku/fits, branch `main`.
