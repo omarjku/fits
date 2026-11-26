@@ -1,8 +1,8 @@
 # PROGRESS
 
-## 2026-11-26 (photo wardrobe, branch `photo-wardrobe`)
+## 2026-11-26 (photo wardrobe)
 
-- Not merged, not deployed: `main` and https://fits-steel.vercel.app are unchanged.
+- Merged into `main` (aad56de, fast-forward from branch `photo-wardrobe`) and deployed to https://fits-steel.vercel.app. The 8-step browser run and `check:photo` both passed against the live site.
 - Baseline finding: the photo tagging on `main` already read real photos correctly (Omar's hoodie -> mid layer, warmth 3, not waterproof). The gaps were around it.
 - Changes: `/api/wardrobe/analyze` also returns `why` (one sentence of Gemini's reasoning); the add-item form has "Take a photo" (rear camera) and "Choose a photo", shows a preview and the reasoning; the wardrobe keeps a 160 px thumbnail, material and colour per item and sends material/colour to `/api/recommend`; trousers and shoes are real layers now (`LAYERS`/`LAYER_LABEL` in `src/types.ts` is the one list every component reads).
 - Proof: `npm run check:photo -- photo.jpg` (repeatable, in the repo). An 8-step Playwright run with real crops from the team's clips (hoodie, jeans, a building) passed; that script and the photos are in the session scratchpad, not the repo, because the repo is public and the photos show people.
