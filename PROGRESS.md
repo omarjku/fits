@@ -1,7 +1,8 @@
 # PROGRESS
 
-## 2026-11-26 (app icons, branch `app-icons`)
+## 2026-11-26 (app icons)
 
+- Merged into `main` (474685f) and deployed; all seven icon and manifest files and the head tags verified on https://fits-steel.vercel.app. Not verified: an actual install on a phone.
 - Favicon (`app/favicon.ico`, 16/32/48), tab icon (`app/icon.png`), iOS home-screen icon (`app/apple-icon.png`), install icons in `public/` and a web app manifest (`app/manifest.ts`), all from the app's own mascot. `app/layout.tsx` metadata sets the app name for iOS.
 - Gotcha: Next.js rejects an `.ico` whose entries are BMP (what ffmpeg writes). The entries must be PNG; the icons were rendered by Chrome at their exact sizes and packed by a small script (scratchpad, not in the repo).
 - IMPORTANT: Gemini's free tier allows 20 requests per day on `gemini-4-hydrogen` and `gemini-3.8-flash`. Testing on 2026-11-26 used both up; the app runs on the two flash-lite fallbacks until the quota resets (about 18 h from 14:50 UTC+1), and falls back to the rules if those run out too.
