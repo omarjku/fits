@@ -1,5 +1,14 @@
 # PROGRESS
 
+## 2026-11-26 (afternoon): Zoha's frontend connected
+
+- Zoha pushed a Vite + React app ("Frosty", mock data) to branch `frosty-app`, unrelated history. Merged into `main` and moved into the Next.js app: `app/layout.tsx` + `app/page.tsx` render `src/App.tsx` client-only (it reads localStorage while rendering). Tailwind v4 via `postcss.config.mjs`. Removed `index.html`, `vite.config.ts`, `src/main.tsx`, `src/vite-env.d.ts`. `npm run dev` now starts everything.
+- `src/api.ts` rewritten: same exports, real calls to `/api/*`. It maps her types (4 layers, `waterRepellent`, warmth slider 0-100, five activities) to the backend's.
+- Backend extended for her screens: `place` lookup by name (Wales is seeded: the geocoder finds a Yorkshire village), country names, 10-year averages with temp/wind/precip, `hourly` (now + 12 h), `now.rainMm`/`snowCm`, a `reason` per outfit item.
+- UI additions in her components: error cards in `App.tsx`; a photo control in the add-item form (`WardrobeCard.tsx`) that fills the fields via Gemini.
+- Checked in the browser at phone width: onboarding, both weather cards, outfit, Wales comparison, photo tagging. `next build` passes.
+- Known gaps: her wardrobe has no trousers or shoes, so a photo of those is declined; real phone photos untested; nothing deployed.
+
 ## 2026-11-26 (later): Gemini verified with a real key
 
 - Both Gemini paths run against the live API: `/api/recommend` returns `source: "gemini"`, `/api/wardrobe/analyze` tagged a jacket image and rejected a non-clothing image (422). Real phone photos not tried yet.

@@ -17,7 +17,7 @@ export type Item = {
 }
 
 export type Activity = 'low' | 'moderate' | 'high'
-export type Prefs = { activity: Activity; warmthPref: number; hours: number }
+export type Prefs = { activity: Activity; warmthPref: number; hours: number; activityName?: string }
 
 export type Conditions = {
   feelsLikeMin: number
@@ -109,4 +109,14 @@ export function pickOutfit(wardrobe: Item[], n: Needs): Item[] {
     a.warmth > 0 ? n.accessories : a.waterproof && n.waterproof)
 
   return [...best, bottom, shoes, ...accessories].filter(Boolean)
+}
+
+/** One-line reason for an item, used when Gemini is unavailable or gives none. */
+export function reasonFor(i: Item, n: Needs): string {
+  if (i.waterproof && n.waterproof && i.slot !== 'base' && i.slot !== 'mid') return 'Water-repellent, keeps you dry'
+  if (i.slot === 'outer') return n.windproof && i.windproof ? 'Blocks the wind' : 'Seals in the warmth'
+  if (i.slot === 'mid') return 'Insulating layer'
+  if (i.slot === 'base') return n.topWarmth >= 6 ? 'Warm layer next to your skin' : 'Light and breathable'
+  if (i.slot === 'accessory') return 'Protects exposed skin'
+  return 'Right weight for today'
 }
