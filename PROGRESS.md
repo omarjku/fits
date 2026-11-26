@@ -4,7 +4,7 @@
 
 - Both Gemini paths run against the live API: `/api/recommend` returns `source: "gemini"`, `/api/wardrobe/analyze` tagged a jacket image and rejected a non-clothing image (422). Real phone photos not tried yet.
 - Fixes found while testing: SDK must use `apiVersion: 'v1beta'` (image input is rejected on v1); `maxRetries: 0` + 15 s timeout (default retries hung a request for 2 min); models tried in order `gemini-4-hydrogen, gemini-3.8-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite` because the free tier often answers 503/429 on the first two; a required slot Gemini skips is filled from the rules.
-- Cap of 30 Gemini calls/min per instance (endpoints are public, no auth). Also set a quota cap on the key.
+- Cap of 60 Gemini attempts/min per instance, each model tried counts (endpoints are public, no auth). Also set a quota cap on the key.
 - Free tier: 5 requests/min on gemini-4-hydrogen, limits are per Google project, so teammates on the same project share them.
 
 **Pending**: merge `backend` into `main` with Zoha's frontend, deploy, set `GEMINI_API_KEY` on the host.

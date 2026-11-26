@@ -7,19 +7,20 @@ import type { Weather } from './weather'
 // Tried in order: Google answers 503 (overloaded) or 429 (rate limit) per model, so a second model keeps the demo alive.
 const MODELS = (process.env.GEMINI_MODEL ?? 'gemini-4-hydrogen,gemini-3.8-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite').split(',').map((m) => m.trim())
 
-// ponytail: the endpoints are public and unauthenticated, so cap paid calls per server instance.
-// This limits a runaway bill, not a determined abuser: also set a quota cap on the key itself.
-const MAX_CALLS_PER_MINUTE = 30
+// ponytail: the endpoints are public and unauthenticated, so cap upstream calls per server instance.
+// Every attempt counts, including each model tried for one request. This limits a runaway bill,
+// not a determined abuser: also set a quota cap on the key itself.
+const MAX_CALLS_PER_MINUTE = 60
 const calls: number[] = []
 
 async function askJson(input: any, schema: object) {
   if (!process.env.GEMINI_API_KEY) throw new HttpError(503, 'GEMINI_API_KEY is not set on the server.')
-  const now = Date.now()
-  while (calls.length && calls[0] < now - 60_000) calls.shift()
-  if (calls.length >= MAX_CALLS_PER_MINUTE) throw new HttpError(429, 'Too many requests right now. Try again in a minute.')
-  calls.push(now)
   const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY, apiVersion: 'v1beta' }) // image input is v1beta-only
   for (const model of MODELS) {
+    const now = Date.now()
+    while (calls.length && calls[0] < now - 60_000) calls.shift()
+    if (calls.length >= MAX_CALLS_PER_MINUTE) throw new HttpError(429, 'Too many requests right now. Try again in a minute.')
+    calls.push(now)
     try {
       const interaction = await client.interactions.create({
         model,
@@ -31,6 +32,8 @@ async function askJson(input: any, schema: object) {
       return JSON.parse(interaction.output_text ?? '')
     } catch (e: any) {
       console.error(`Gemini ${model} failed:`, e?.message ?? e)
+      // Only "busy" answers are worth another model; a rejected request would be rejected by all of them.
+      if (e?.status >= 400 && e.status < 500 && e.status !== 429) throw new HttpError(502, 'Gemini could not process that request.')
     }
   }
   throw new HttpError(503, 'Gemini is busy right now. Try again in a moment.')
