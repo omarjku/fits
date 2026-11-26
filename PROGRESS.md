@@ -1,5 +1,20 @@
 # PROGRESS
 
+## 2026-11-26 (pitch video: real cut)
+
+- `video-out/frosty-pitch-v3.mp4`: 39.6 s, 1920x1080, with Zoha's snow intro, Zoha's and Omar's clips, word-timed captions, the app demo cued to what they say, and the QR end card. Master (46 Mbps) is `~/Studio/fits-video/projects/frosty-pitch/out/pitch-v3.mp4`.
+- Takes are in the video project's `media/takes` (`snow-intro.mp4`, `zoha-why.mov`, `omar-how.mov`): audio cleaned and levelled with ffmpeg, fades baked in (raea's `fadeOut` did not apply at a clip that ends at its source's end). Transcripts: `NAME.words.json`, made by `raea cut TAKE "the"`.
+- `pitch.tsx` builds its own timeline words and `cue("phrase")` from those transcripts, so trims in the clip list move captions and app screens with them. Omar's "your, your" stumble is cut (10.24-10.44 s).
+- Fonts Outfit-600 and DMSans-500 downloaded to `media/fonts` for captions. Logo and end-card chime is synthesised (`media/sound/chime.wav`).
+- Still a stand-in: the jacket image in the photo-tagging beat is a drawing, not a real photo.
+
+## 2026-11-26 (pitch video started)
+
+- 59 s pitch video lives OUTSIDE this repo, in the raea workspace `~/Studio/fits-video/projects/frosty-pitch` (raea refuses a workspace inside a git repo). Composition: `pitch.tsx`; plan: `brief.ts`, `pitch.script.ts`; real app captures in `media/app`, brand PNGs in `media/brand`.
+- Timeline: 0-11 s snow intro, 11-13.5 logo, 13.5-30 Zoha "why" + demo, 30-53 Omar "how" + demo, 53-59 QR end card.
+- First cut with placeholders: `video-out/frosty-pitch-previz-v1.mp4` (git-ignored). Render: `raea render pitch.tsx -o out/NAME.mp4` (8 s). Capture scripts are in the session scratchpad and may be gone; app screens were captured with Playwright (`channel: 'chrome'`) from https://fits-steel.vercel.app.
+- Waiting on: the snow clip, Zoha's clip (16 s max), Omar's clip (22 s max), a real jacket photo for the photo-tagging beat. Fonts Outfit/DM Sans are not installed, so brand text is PNG; word-timed captions would need the font files.
+
 ## 2026-11-26 (deployed)
 
 - Live at https://fits-steel.vercel.app (Vercel project `fits`, team "Omar's projects"). Deployed with `vercel --prod` from the CLI: the GitHub repo is NOT connected to Vercel (connection failed), so pushes do not auto-deploy. Redeploy with `vercel --prod --yes`.

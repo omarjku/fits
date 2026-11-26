@@ -11,3 +11,4 @@ next-env.d.ts
 dist
 .vercel
 frosty-qr.png
+video-out/
