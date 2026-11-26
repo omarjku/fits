@@ -6,6 +6,7 @@ import { handle, HttpError } from '@/lib/http'
 export function POST(req: Request) {
   return handle(async () => {
     const body = await req.json().catch(() => { throw new HttpError(400, 'Body must be JSON.') })
-    return { item: { id: randomUUID(), ...(await analyzeItem(body.image)) } }
+    const { item, why } = await analyzeItem(body.image)
+    return { item: { id: randomUUID(), ...item }, why }
   })
 }

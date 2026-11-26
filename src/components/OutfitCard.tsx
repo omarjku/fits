@@ -1,23 +1,20 @@
-import type { OutfitItem, Recommendation } from '../types'
+import { LAYERS, LAYER_LABEL, type OutfitItem, type Recommendation } from '../types'
 import Mascot from './Mascot'
-import Icon, { itemIcon } from './Icon'
-
-const ORDER = ['base', 'mid', 'outer', 'accessory'] as const
-const LABEL = { base: 'Base layer', mid: 'Mid layer', outer: 'Outer layer', accessory: 'Accessories' }
+import { ItemArt } from './Icon'
 
 export function OutfitList({ items, highlight = [] }: { items: OutfitItem[]; highlight?: string[] }) {
   return (
     <div className="space-y-4">
-      {ORDER.map((l) => {
+      {LAYERS.map((l) => {
         const group = items.filter((i) => i.item.layer === l)
         if (!group.length) return null
         return (
           <div key={l}>
-            <h4 className="caption font-medium">{LABEL[l]}</h4>
+            <h4 className="caption font-medium">{LAYER_LABEL[l]}</h4>
             <ul className="mt-1 space-y-2">
               {group.map(({ item, reason }) => (
                 <li key={item.id} className={`flex items-center gap-3 rounded-2xl p-2.5 ${highlight.includes(item.id) ? 'bg-sun-soft ring-1 ring-navy' : 'bg-white border border-frost-line'}`}>
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-ice text-navy"><Icon name={itemIcon(item)} className="h-7 w-7" /></span>
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-ice text-navy"><ItemArt item={item} className="h-7 w-7" photoClassName="h-11 w-11" /></span>
                   <div className="min-w-0">
                     <p className="font-medium text-navy">{item.name}{highlight.includes(item.id) && <span className="caption ml-2">(extra)</span>}</p>
                     <p className="caption">{reason}</p>

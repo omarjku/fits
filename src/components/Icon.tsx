@@ -8,6 +8,10 @@ const P = {
   hat: 'M5 15a7 7 0 0 1 14 0zM4 15h16v3H4zM12 5V3',
   scarf: 'M5 8q7 4 14 0v4q-7 4-14 0zM14 13l1 7h3l-1-7',
   gloves: 'M8 21v-5l-3-4 1.5-1.5L9 13V5a1 1 0 0 1 2 0v6V4a1 1 0 0 1 2 0v7V5a1 1 0 0 1 2 0v8l1-3a1 1 0 0 1 2 1l-1 6v4z',
+  trousers: 'M7 3h10l1.5 18h-4.5L12 9l-2 12H5.5zM7 6h10',
+  shoe: 'M3 18v-5l3-1 2.5-5 3 1.5.5 3.5 6 2.5q3 1 3 4zM3 15.5h18',
+  camera: 'M4 8h3l2-3h6l2 3h3v11H4zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z',
+  image: 'M4 5h16v14H4zM4 16l5-5 4 4 3-3 4 4M15.5 9.5h.01',
   drop: 'M12 3c3 4.5 5 7.5 5 10a5 5 0 0 1-10 0c0-2.5 2-5.5 5-10z',
   plus: 'M12 5v14M5 12h14',
   sliders: 'M4 7h10M18 7h2M4 17h2M10 17h10M16 5v4M8 15v4',
@@ -22,6 +26,8 @@ export type IconName = keyof typeof P
 
 export function itemIcon(it: Pick<ClothingItem, 'name' | 'layer'>): IconName {
   const n = it.name.toLowerCase()
+  if (it.layer === 'bottom') return 'trousers'
+  if (it.layer === 'shoes') return 'shoe'
   if (/glove|mitt/.test(n)) return 'gloves'
   if (/scarf/.test(n)) return 'scarf'
   if (/beanie|hat|cap/.test(n)) return 'hat'
@@ -29,10 +35,17 @@ export function itemIcon(it: Pick<ClothingItem, 'name' | 'layer'>): IconName {
   if (/jacket|shell|coat|parka/.test(n)) return 'jacket'
   if (/merino|base|long/.test(n)) return 'longsleeve'
   if (/tee|shirt/.test(n)) return 'tee'
-  return ({ base: 'tee', mid: 'sweater', outer: 'jacket', accessory: 'scarf' } as const)[it.layer]
+  return ({ base: 'tee', mid: 'sweater', outer: 'jacket', bottom: 'trousers', shoes: 'shoe', accessory: 'scarf' } as const)[it.layer]
 }
 
 export const activityIcon = (a: Activity): IconName => a
+
+/** A wardrobe item's picture: its own photo when it has one, otherwise the line icon for its kind. */
+export function ItemArt({ item, className, photoClassName }: { item: Pick<ClothingItem, 'name' | 'layer' | 'photo'>; className: string; photoClassName: string }) {
+  return item.photo
+    ? <img src={item.photo} alt="" className={`${photoClassName} object-cover`} />
+    : <Icon name={itemIcon(item)} className={className} />
+}
 
 /** One style everywhere: 24px grid, 1.6 stroke, round caps, line only. */
 export default function Icon({ name, className = 'h-6 w-6' }: { name: IconName; className?: string }) {

@@ -71,8 +71,12 @@ type Item = {
 Gemini looks at one photo and tags it. Body: `{ "image": "data:image/jpeg;base64,..." }` (jpeg, png, webp, heic).
 Resize to about 1024 px on the long side before sending: the request limit is about 3 MB.
 
-Returns `{ "item": Item }` with a fresh `id`. Keep the photo on the frontend next to that `id`.
-`422` if the photo is not clothing, `503` if the Gemini key is missing.
+Returns `{ "item": Item, "why": "one sentence on what Gemini saw" }` with a fresh `id`, for example
+`"Thick cotton fleece hoodie provides medium warmth, but it absorbs snow."` The frontend keeps a 160 px thumbnail
+of the photo, plus `material` and `color`, on the wardrobe item and sends the last two back with `/api/recommend`.
+`422` if the photo is not clothing, `503` if the Gemini key is missing or every model is busy.
+
+Check it with any photo while the app is running: `npm run check:photo -- path/to/photo.jpg`.
 
 ## `POST /api/recommend`
 

@@ -1,5 +1,10 @@
 export type Activity = 'walking' | 'commuting' | 'hiking' | 'skiing' | 'sitting outside'
-export type Layer = 'base' | 'mid' | 'outer' | 'accessory'
+// The layers an outfit is built from, in the order they are listed. The same six the backend calls "slots".
+export const LAYERS = ['base', 'mid', 'outer', 'bottom', 'shoes', 'accessory'] as const
+export type Layer = (typeof LAYERS)[number]
+export const LAYER_LABEL: Record<Layer, string> = {
+  base: 'Base layer', mid: 'Mid layer', outer: 'Outer layer', bottom: 'Bottoms', shoes: 'Shoes', accessory: 'Accessories',
+}
 
 export interface Preferences {
   postcode: string
@@ -16,6 +21,10 @@ export interface ClothingItem {
   layer: Layer
   warmth: 1 | 2 | 3 | 4 | 5
   waterRepellent: boolean
+  // set when the item was added from a photo
+  photo?: string // small thumbnail, as a data URL
+  material?: string
+  color?: string
 }
 
 export interface HourlyPoint { hour: string; temp: number }
@@ -58,4 +67,7 @@ export interface NewClothing {
   warmth: 1 | 2 | 3 | 4 | 5
   waterRepellent: boolean
   emoji?: string
+  photo?: string
+  material?: string
+  color?: string
 }

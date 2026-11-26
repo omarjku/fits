@@ -37,7 +37,7 @@ export async function getWardrobe(): Promise<ClothingItem[]> {
   return [...loadWardrobe()]
 }
 
-const EMOJI: Record<string, string> = { base: '👕', mid: '🧶', outer: '🧥', accessory: '🧣' }
+const EMOJI: Record<Layer, string> = { base: '👕', mid: '🧶', outer: '🧥', bottom: '👖', shoes: '👟', accessory: '🧣' }
 
 export async function addClothing(input: NewClothing): Promise<ClothingItem> {
   const item: ClothingItem = {
@@ -47,6 +47,9 @@ export async function addClothing(input: NewClothing): Promise<ClothingItem> {
     warmth: input.warmth,
     waterRepellent: input.waterRepellent,
     emoji: input.emoji || EMOJI[input.layer],
+    ...(input.photo ? { photo: input.photo } : {}),
+    ...(input.material ? { material: input.material } : {}),
+    ...(input.color ? { color: input.color } : {}),
   }
   wardrobe = [...loadWardrobe(), item]
   saveWardrobe()
@@ -143,6 +146,7 @@ export async function getRecommendation(prefs: Preferences, destination?: string
     wardrobe: items.map((i) => ({
       id: i.id, name: i.name, slot: i.layer, warmth: i.warmth,
       waterproof: i.waterRepellent, windproof: i.layer === 'outer' && i.waterRepellent,
+      material: i.material, color: i.color, // known for items added from a photo; lets Gemini match fabrics and colours
     })),
   }))
   const byId = new Map(items.map((i) => [i.id, i]))
@@ -157,29 +161,36 @@ export async function getRecommendation(prefs: Preferences, destination?: string
 
 // ---------- Photo tagging ----------
 
-/** Shrink a photo to at most 1024 px so the upload stays small. */
-async function toDataUrl(file: File): Promise<string> {
-  const bitmap = await createImageBitmap(file)
-  const scale = Math.min(1, 1024 / Math.max(bitmap.width, bitmap.height))
+/** Draw a photo no larger than `max` px on its long side and return it as a JPEG data URL. */
+function shrink(bitmap: ImageBitmap, max: number, quality: number): string {
+  const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height))
   const canvas = document.createElement('canvas')
   canvas.width = Math.round(bitmap.width * scale)
   canvas.height = Math.round(bitmap.height * scale)
   canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
-  return canvas.toDataURL('image/jpeg', 0.85)
+  return canvas.toDataURL('image/jpeg', quality)
 }
 
-interface ApiItem { name: string; slot: string; warmth: number; waterproof: boolean }
+interface ApiItem { name: string; slot: Layer; warmth: number; waterproof: boolean; material: string; color: string }
 
-/** Let Gemini look at a photo of a garment and suggest how to file it in the wardrobe. */
-export async function analyzePhoto(file: File): Promise<NewClothing> {
-  const image = await toDataUrl(file).catch(() => { throw new Error('Could not read that photo. Try another one.') })
-  const { item } = await call<{ item: ApiItem }>('/api/wardrobe/analyze', post({ image }))
-  if (!(['base', 'mid', 'outer', 'accessory'] as string[]).includes(item.slot))
-    throw new Error(`That looks like ${item.name.toLowerCase()}. Frosty only tracks tops, jackets and accessories for now.`)
+/**
+ * Let Gemini look at a photo of a garment. Returns how to file it in the wardrobe (with a thumbnail of the
+ * photo to keep) and, in one sentence, what Gemini saw that led it there.
+ */
+export async function analyzePhoto(file: File): Promise<{ item: NewClothing; why: string }> {
+  const bitmap = await createImageBitmap(file).catch(() => { throw new Error('Could not read that photo. Try another one.') })
+  // 1024 px is plenty for Gemini to judge fabric and cut and keeps the upload small; 160 px is what the app shows
+  const { item, why } = await call<{ item: ApiItem; why: string }>('/api/wardrobe/analyze', post({ image: shrink(bitmap, 1024, 0.85) }))
   return {
-    name: item.name,
-    layer: item.slot as Layer,
-    warmth: Math.min(5, Math.max(1, item.warmth)) as NewClothing['warmth'],
-    waterRepellent: item.waterproof,
+    item: {
+      name: item.name,
+      layer: item.slot, // the backend's six slots are this app's six layers
+      warmth: Math.min(5, Math.max(1, item.warmth)) as NewClothing['warmth'],
+      waterRepellent: item.waterproof,
+      photo: shrink(bitmap, 160, 0.8),
+      material: item.material,
+      color: item.color,
+    },
+    why,
   }
 }

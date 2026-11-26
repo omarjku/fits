@@ -50,8 +50,9 @@ const itemSchema = {
     windproof: { type: 'boolean' },
     material: { type: 'string' },
     color: { type: 'string' },
+    why: { type: 'string', description: 'One sentence, at most 18 words, giving the visible evidence for the warmth and waterproof calls.' },
   },
-  required: ['isClothing', 'name', 'slot', 'warmth', 'waterproof', 'windproof', 'material', 'color'],
+  required: ['isClothing', 'name', 'slot', 'warmth', 'waterproof', 'windproof', 'material', 'color', 'why'],
 }
 
 const ITEM_PROMPT = `You are tagging one garment from a wardrobe photo for a weather-aware outfit app.
@@ -59,18 +60,21 @@ Judge how heavy and warm it is from fabric, thickness, lining and cut.
 slot: base = worn next to skin on the upper body (T-shirt, shirt, long-sleeve); mid = insulating layer over it (sweater, hoodie, fleece, cardigan); outer = jacket or coat; bottom = trousers, skirt, shorts; shoes; accessory = hat, scarf, gloves, umbrella.
 warmth: 0 = adds no warmth (umbrella); 1 = thin T-shirt, shorts; 2 = shirt, long-sleeve, light trousers, sneakers, light jacket; 3 = sweater, hoodie, jeans, ankle boots; 4 = thick knit, fleece, lined trousers; 5 = winter coat, puffer, parka, lined winter boots.
 waterproof: true only if it would keep rain or snow out (coated shell, rubber, treated leather, umbrella).
-windproof: true for dense or coated outer fabrics.`
+windproof: true for dense or coated outer fabrics.
+why: say what you can see that led to those calls, the way you would tell the owner, e.g. "Thick cotton fleece with a hood: medium warmth, but it soaks up rain."
+If a person is wearing it, judge the garment that fills most of the photo.`
 
-export async function analyzeItem(imageDataUrl: string): Promise<Omit<Item, 'id'>> {
+/** What Gemini makes of one garment photo: the wardrobe item, and its reasoning in a sentence. */
+export async function analyzeItem(imageDataUrl: string): Promise<{ item: Omit<Item, 'id'>; why: string }> {
   const m = /^data:(image\/(?:jpeg|png|webp|heic|heif));base64,([A-Za-z0-9+/=]+)$/.exec(imageDataUrl ?? '')
   if (!m) throw new HttpError(400, 'Send { "image": "data:image/jpeg;base64,..." } (jpeg, png, webp or heic).')
   if (m[2].length > 4_000_000) throw new HttpError(413, 'Image too large: resize it to about 1024 px before uploading.')
-  const { isClothing, ...item } = await askJson(
+  const { isClothing, why, ...item } = await askJson(
     [{ type: 'text', text: ITEM_PROMPT }, { type: 'image', data: m[2], mime_type: m[1] }],
     itemSchema,
   )
   if (!isClothing) throw new HttpError(422, 'That photo does not look like a piece of clothing.')
-  return sanitizeItem(item)
+  return { item: sanitizeItem(item), why: String(why ?? '').slice(0, 200) }
 }
 
 /** Coerce anything that came from a model or a client into a well-formed item. */

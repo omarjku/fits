@@ -1,5 +1,13 @@
 # PROGRESS
 
+## 2026-11-26 (photo wardrobe, branch `photo-wardrobe`)
+
+- Not merged, not deployed: `main` and https://fits-steel.vercel.app are unchanged.
+- Baseline finding: the photo tagging on `main` already read real photos correctly (Omar's hoodie -> mid layer, warmth 3, not waterproof). The gaps were around it.
+- Changes: `/api/wardrobe/analyze` also returns `why` (one sentence of Gemini's reasoning); the add-item form has "Take a photo" (rear camera) and "Choose a photo", shows a preview and the reasoning; the wardrobe keeps a 160 px thumbnail, material and colour per item and sends material/colour to `/api/recommend`; trousers and shoes are real layers now (`LAYERS`/`LAYER_LABEL` in `src/types.ts` is the one list every component reads).
+- Proof: `npm run check:photo -- photo.jpg` (repeatable, in the repo). An 8-step Playwright run with real crops from the team's clips (hoodie, jeans, a building) passed; that script and the photos are in the session scratchpad, not the repo, because the repo is public and the photos show people.
+- Not tested: a real phone's camera capture; shoes from a real photo.
+
 ## 2026-11-26 (pitch video: real cut)
 
 - `video-out/frosty-pitch-v3.mp4`: 39.6 s, 1920x1080, with Zoha's snow intro, Zoha's and Omar's clips, word-timed captions, the app demo cued to what they say, and the QR end card. Master (46 Mbps) is `~/Studio/fits-video/projects/frosty-pitch/out/pitch-v3.mp4`.
