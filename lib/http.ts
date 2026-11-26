@@ -12,7 +12,7 @@ export async function handle(fn: () => Promise<unknown>) {
     return Response.json(await fn())
   } catch (e) {
     if (e instanceof HttpError) return Response.json({ error: e.message }, { status: e.status })
-    console.error(e)
+    console.error(e instanceof Error ? e.stack : e)
     return Response.json({ error: 'Something went wrong on the server.' }, { status: 500 })
   }
 }

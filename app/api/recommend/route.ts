@@ -20,9 +20,10 @@ export function POST(req: Request) {
     const weather = await getWeather(String(b.postcode ?? ''), String(b.country ?? 'AT'), prefs.hours)
     const n = needs(weather.window, weather.history.vsLastWeek, prefs)
 
-    const fromGemini = await chooseOutfit(weather, n, prefs, wardrobe).catch((e) => { console.error('Gemini outfit failed, using rules:', e.message); return null })
+    const rules = pickOutfit(wardrobe, n)
+    const fromGemini = await chooseOutfit(weather, n, prefs, wardrobe, rules).catch((e) => { console.error('Gemini outfit failed, using rules:', e.message); return null })
     const outfit = fromGemini ?? {
-      items: pickOutfit(wardrobe, n),
+      items: rules,
       headline: `Feels like ${Math.round(weather.window.feelsLikeMin)}° in ${weather.place.name}`,
       explanation: n.reasons.join(' ') || 'Comfortable conditions: one light layer is enough.',
       tips: [],
