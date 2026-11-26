@@ -6,8 +6,17 @@ import type { Weather } from './weather'
 
 const MODEL = process.env.GEMINI_MODEL ?? 'gemini-4-hydrogen'
 
+// ponytail: the endpoints are public and unauthenticated, so cap paid calls per server instance.
+// This limits a runaway bill, not a determined abuser: also set a quota cap on the key itself.
+const MAX_CALLS_PER_MINUTE = 30
+const calls: number[] = []
+
 async function askJson(input: any, schema: object) {
   if (!process.env.GEMINI_API_KEY) throw new HttpError(503, 'GEMINI_API_KEY is not set on the server.')
+  const now = Date.now()
+  while (calls.length && calls[0] < now - 60_000) calls.shift()
+  if (calls.length >= MAX_CALLS_PER_MINUTE) throw new HttpError(429, 'Too many requests right now. Try again in a minute.')
+  calls.push(now)
   const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
   const interaction = await client.interactions.create({
     model: MODEL,
