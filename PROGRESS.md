@@ -1,5 +1,11 @@
 # PROGRESS
 
+## 2026-11-26 (pitch video: Zoha-only cut)
+
+- `video-out/frosty-pitch-zoha-v1.mp4`: 29.7 s, the pitch without Omar's part. After Zoha's last word her card fades out, the phone moves to the centre and scrolls the outfit for 2.4 s, then the end card.
+- `pitch.tsx` (in `~/Studio/fits-video/projects/frosty-pitch`) now has two compositions from one `build(withOmar)` plan: `pitch` and `pitch-zoha`. Render one with `raea render pitch.tsx --composition pitch-zoha --quality master -o out/NAME.mp4`.
+- The full cut was re-rendered after the restructure and compared with the approved `out/pitch-v3.mp4`: all 1187 frames bit-identical (ffmpeg psnr). That comparison caught two regressions on the way; rerun it after any edit to `pitch.tsx`.
+
 ## 2026-11-26 (app icons)
 
 - Merged into `main` (474685f) and deployed; all seven icon and manifest files and the head tags verified on https://fits-steel.vercel.app. Not verified: an actual install on a phone.
